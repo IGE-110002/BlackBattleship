@@ -30,9 +30,9 @@ Grupo TP05-5
 
 8. Como utilizador convidado (Guest), quero utilizar uma arma especial numa célula inimiga para realizar um ataque diferente.
 
-9. Como utilizador registado (Registered User), quero abrir a janela de login para aceder à minha conta.
+9. Como utilizador registado (Registered User), quero iniciar sessão com email e palavra-passe para aceder à minha conta.
 
-10. Como utilizador registado (Registered User), quero iniciar sessão com email e palavra-passe para aceder à minha conta.
+10. Como utilizador, quero consultar as regras do jogo para compreender como jogar Battleship.
 
 11. Como utilizador registado (Registered User), quero terminar sessão para sair da minha conta.
 
