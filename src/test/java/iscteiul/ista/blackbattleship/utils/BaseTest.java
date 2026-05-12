@@ -3,7 +3,9 @@ package iscteiul.ista.blackbattleship.utils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.edge.EdgeDriver;
+
+import io.github.bonigarcia.wdm.WebDriverManager;
 
 public class BaseTest {
 
@@ -11,7 +13,8 @@ public class BaseTest {
 
     @BeforeEach
     public void setup() {
-        driver = new ChromeDriver();
+        WebDriverManager.edgedriver().setup();
+        driver = new EdgeDriver();
         driver.manage().window().maximize();
         driver.get("https://papergames.io/en/battleship");
     }
