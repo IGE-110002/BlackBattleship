@@ -34,9 +34,9 @@ Grupo TP05-5
 
 10. Como utilizador, quero consultar as regras do jogo para compreender como jogar Battleship.
 
-11. Como utilizador registado (Registered User), quero terminar sessão para sair da minha conta.
+11. Como utilizador convidado, quero iniciar uma partida online para jogar contra outro jogador.
 
-12. Como utilizador convidado, quero iniciar uma partida online para jogar contra outro jogador.
+12. Como utilizador, quero alterar o modo escuro da aplicação nas definições.
 
 13. Como utilizador registado (Registered User), quero consultar o histórico de partidas para visualizar jogos anteriores.
 
