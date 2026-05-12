@@ -30,13 +30,15 @@ Grupo TP05-5
 
 8. Como utilizador convidado (Guest), quero utilizar uma arma especial numa célula inimiga para realizar um ataque diferente.
 
+## User Stories - Elie
+
 9. Como utilizador registado (Registered User), quero iniciar sessão com email e palavra-passe para aceder à minha conta.
 
 10. Como utilizador, quero consultar as regras do jogo para compreender como jogar Battleship.
 
-11. Como utilizador registado (Registered User), quero terminar sessão para sair da minha conta.
+11. Como utilizador convidado, quero iniciar uma partida online para jogar contra outro jogador.
 
-12. Como utilizador registado (Registered User), quero abrir o menu do utilizador para aceder às opções da conta.
+12. Como utilizador, quero alterar o modo escuro da aplicação nas definições.
 
 13. Como utilizador registado (Registered User), quero consultar o histórico de partidas para visualizar jogos anteriores.
 
