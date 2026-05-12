@@ -12,7 +12,7 @@ Grupo TP05-5
 
 # Scrum Product Backlog
 
-## User Stories
+## User Stories - 
 
 1. Como utilizador convidado (Guest), quero iniciar uma partida contra um robô e inserir um nickname para começar automaticamente o jogo.
 
@@ -22,6 +22,7 @@ Grupo TP05-5
 
 4. Como utilizador convidado (Guest), quero cancelar a desistência para continuar a partida.
 
+## User Stories - 
 5. Como utilizador convidado (Guest), quero abrir o menu de emojis para escolher uma reação durante a partida.
 
 6. Como utilizador convidado (Guest), quero enviar um emoji para reagir durante a partida.
@@ -40,6 +41,7 @@ Grupo TP05-5
 
 12. Como utilizador, quero alterar o modo escuro da aplicação nas definições.
 
+## User Stories - 
 13. Como utilizador registado (Registered User), quero consultar o histórico de partidas para visualizar jogos anteriores.
 
 14. Como utilizador registado (Registered User), quero consultar o meu perfil para visualizar as minhas informações de jogador.
