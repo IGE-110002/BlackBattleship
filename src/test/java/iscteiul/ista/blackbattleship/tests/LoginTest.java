@@ -30,6 +30,6 @@ public class LoginTest extends BaseTest {
 
         loginPage.closePopup();
 
-        Thread.sleep(15000);
+        Thread.sleep(5000);
     }
 }

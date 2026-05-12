@@ -20,6 +20,6 @@ public class OnlineGameTest extends BaseTest {
 
         onlineGamePage.clickContinue();
 
-        Thread.sleep(15000);
+        Thread.sleep(5000);
     }
 }
