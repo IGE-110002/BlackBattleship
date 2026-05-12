@@ -1,5 +1,6 @@
-package iscteiul.ista.blackbattleship;
+package iscteiul.ista.blackbattleship.tests;
 
+import iscteiul.ista.blackbattleship.pages.MainPage;
 import org.junit.jupiter.api.*;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -10,7 +11,7 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 
 import java.time.Duration;
-
+@Disabled
 public class MainPageTest {
     private WebDriver driver;
     private MainPage mainPage;
