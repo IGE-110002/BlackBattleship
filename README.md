@@ -36,7 +36,7 @@ Grupo TP05-5
 
 11. Como utilizador registado (Registered User), quero terminar sessão para sair da minha conta.
 
-12. Como utilizador registado (Registered User), quero abrir o menu do utilizador para aceder às opções da conta.
+12. Como utilizador convidado, quero iniciar uma partida online para jogar contra outro jogador.
 
 13. Como utilizador registado (Registered User), quero consultar o histórico de partidas para visualizar jogos anteriores.
 
