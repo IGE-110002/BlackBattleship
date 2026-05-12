@@ -12,7 +12,7 @@ Grupo TP05-5
 
 # Scrum Product Backlog
 
-## User Stories - 
+## User Stories - 108419
 
 1. Como utilizador convidado (Guest), quero iniciar uma partida contra um robô e inserir um nickname para começar automaticamente o jogo.
 
