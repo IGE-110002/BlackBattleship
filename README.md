@@ -30,7 +30,7 @@ Grupo TP05-5
 
 8. Como utilizador convidado (Guest), quero utilizar uma arma especial numa célula inimiga para realizar um ataque diferente.
 
-## User Stories - Elie
+## User Stories - 110002
 
 9. Como utilizador registado (Registered User), quero iniciar sessão com email e palavra-passe para aceder à minha conta.
 
