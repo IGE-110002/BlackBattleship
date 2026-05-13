@@ -22,7 +22,7 @@ Grupo TP05-5
 
 4. Como utilizador convidado (Guest), quero cancelar a desistência para continuar a partida.
 
-## User Stories - 
+## User Stories - (121008)
 5. Como utilizador convidado (Guest), quero abrir o menu de emojis para escolher uma reação durante a partida.
 
 6. Como utilizador convidado (Guest), quero enviar um emoji para reagir durante a partida.
