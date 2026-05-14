@@ -17,7 +17,7 @@ public class AttackEnemyCellTest extends BaseTest {
         AttackEnemyCellPage page =
                 new AttackEnemyCellPage(driver);
 
-        page.startGuestGame("ES-Project");
+        page.startGuestGame("ES_Project");
 
         Assertions.assertTrue(
                 page.attackEnemyCell(),
