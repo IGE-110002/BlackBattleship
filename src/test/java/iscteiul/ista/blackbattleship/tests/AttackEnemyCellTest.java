@@ -1,6 +1,8 @@
 package iscteiul.ista.blackbattleship.tests;
 
+import iscteiul.ista.blackbattleship.pages.AttackEnemyCellPage;
 import iscteiul.ista.blackbattleship.utils.BaseTest;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -9,29 +11,22 @@ import org.junit.jupiter.api.Test;
  */
 public class AttackEnemyCellTest extends BaseTest {
 
-    /*@Test
-    public void testAttackEnemyCell() throws InterruptedException {
-        // Arrange
-        HomePage homePage = new HomePage(driver);
-        GamePage gamePage = new GamePage(driver);
+    @Test
+    public void testAttackEnemyCell() {
 
-        // Wait for page to fully load
-        Thread.sleep(3000);
+        AttackEnemyCellPage page =
+                new AttackEnemyCellPage(driver);
 
-        homePage.openGameUrl();
-        homePage.enterNickname("TestPlayer");
-        homePage.startGameVsRobot();
+        page.startGuestGame("ES-Project");
 
-        // Wait for game to initialize
-        Thread.sleep(3000);
+        Assertions.assertTrue(
+                page.attackEnemyCell(),
+                "The guest player should be able to select an enemy cell to attack."
+        );
 
-        // Act
-        gamePage.attackEnemyCell(1, 1);
-
-        // Wait for attack animation
-        Thread.sleep(1000);
-
-        // Assert
-        assertTrue(gamePage.isGameBoardVisible(), "Game board should remain visible after attacking a cell");
-    }*/
+        Assertions.assertTrue(
+                page.isGameBoardVisible(),
+                "The game board should remain visible after attacking an enemy cell."
+        );
+    }
 }

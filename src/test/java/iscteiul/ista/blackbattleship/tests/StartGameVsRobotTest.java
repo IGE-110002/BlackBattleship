@@ -11,16 +11,17 @@ import org.junit.jupiter.api.Test;
 public class StartGameVsRobotTest extends BaseTest {
 
     @Test
-    public void testStartGameVsRobot() {
+    public void testStartGameVsRobot() throws InterruptedException {
 
         StartGameVsRobotPage page =
                 new StartGameVsRobotPage(driver);
 
-        page.startGameVsRobot("ES-Project");
+        page.startGameVsRobot("ES_Project");
 
         Assertions.assertTrue(
                 page.isGameStarted(),
                 "The game should start after choosing Play vs Robot and entering a nickname."
         );
+        Thread.sleep(3000);
     }
 }

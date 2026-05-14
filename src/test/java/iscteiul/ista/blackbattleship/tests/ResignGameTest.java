@@ -1,6 +1,8 @@
 package iscteiul.ista.blackbattleship.tests;
 
+import iscteiul.ista.blackbattleship.pages.ResignGameTestPage;
 import iscteiul.ista.blackbattleship.utils.BaseTest;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -9,32 +11,18 @@ import org.junit.jupiter.api.Test;
  */
 public class ResignGameTest extends BaseTest {
 
-   /* @Test
-    public void testResignGame() throws InterruptedException {
-        // Arrange
-        HomePage homePage = new HomePage(driver);
-        GamePage gamePage = new GamePage(driver);
-        ResignDialog resignDialog = new ResignDialog(driver);
+    @Test
+    public void testResignGame() {
 
-        // Wait for page to fully load
-        Thread.sleep(3000);
+        ResignGameTestPage page =
+                new ResignGameTestPage(driver);
 
-        homePage.openGameUrl();
-        homePage.enterNickname("TestPlayer");
-        homePage.startGameVsRobot();
+        page.startGuestGame("ES-Project");
+        page.resignFromCurrentGame();
 
-        // Wait for game to initialize
-        Thread.sleep(3000);
-
-        // Act
-        gamePage.clickResignButton();
-        Thread.sleep(1000);
-        resignDialog.confirmResign();
-
-        // Wait for resign to complete
-        Thread.sleep(2000);
-
-        // Assert - After resigning, the game should end.
-        // Test passes if no exceptions are thrown during resign flow.
-    }*/
+        Assertions.assertTrue(
+                page.hasLeftCurrentGame(),
+                "The guest player should leave the current match after confirming resignation."
+        );
+    }
 }

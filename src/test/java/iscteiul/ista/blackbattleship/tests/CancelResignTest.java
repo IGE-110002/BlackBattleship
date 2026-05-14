@@ -1,6 +1,8 @@
 package iscteiul.ista.blackbattleship.tests;
 
+import iscteiul.ista.blackbattleship.pages.CancelResignTestPage;
 import iscteiul.ista.blackbattleship.utils.BaseTest;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -9,32 +11,18 @@ import org.junit.jupiter.api.Test;
  */
 public class CancelResignTest extends BaseTest {
 
-    /*@Test
-    public void testCancelResign() throws InterruptedException {
-        // Arrange
-        HomePage homePage = new HomePage(driver);
-        GamePage gamePage = new GamePage(driver);
-        ResignDialog resignDialog = new ResignDialog(driver);
+    @Test
+    public void testCancelResign() {
 
-        // Wait for page to fully load
-        Thread.sleep(3000);
+        CancelResignTestPage page =
+                new CancelResignTestPage(driver);
 
-        homePage.openGameUrl();
-        homePage.enterNickname("TestPlayer");
-        homePage.startGameVsRobot();
+        page.startGuestGame("ES-Project");
+        page.cancelResignationFlow();
 
-        // Wait for game to initialize
-        Thread.sleep(3000);
-
-        // Act
-        gamePage.clickResignButton();
-        Thread.sleep(1000);
-        resignDialog.cancelResign();
-
-        // Wait for dialog to close
-        Thread.sleep(1000);
-
-        // Assert
-        assertTrue(gamePage.isGameBoardVisible(), "Game board should still be visible after canceling resign");
-    }*/
+        Assertions.assertTrue(
+                page.isGameStillRunning(),
+                "The guest player should remain in the match after canceling resignation."
+        );
+    }
 }
