@@ -41,7 +41,7 @@ Grupo TP05-5
 
 12. Como utilizador, quero alterar o modo escuro da aplicação nas definições.
 
-## User Stories - 
+## User Stories - 110772
 13. Como utilizador registado (Registered User), quero consultar o histórico de partidas para visualizar jogos anteriores.
 
 14. Como utilizador registado (Registered User), quero consultar o meu perfil para visualizar as minhas informações de jogador.
