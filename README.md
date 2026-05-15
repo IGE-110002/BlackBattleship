@@ -48,6 +48,6 @@ Grupo TP05-5
 
 14. Como utilizador convidado (Guest), quero criar um jogo com um amigo para poder partilhar o link de convite.
 
-15. Como utilizador convidado (Guest), quero iniciar um jogo contra o robot inserindo um nickname para poder jogar sem precisar de outro utilizador.
-
+15. Como utilizador convidado (Guest), quero consultar as instruções/regras do Battleship para compreender como jogar antes de iniciar uma partida.
+    
 16. Como utilizador convidado (Guest), quero voltar à página inicial para consultar os modos de jogo disponíveis.
