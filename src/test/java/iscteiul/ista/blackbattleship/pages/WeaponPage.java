@@ -83,6 +83,6 @@ public class WeaponPage {
         System.out.println(
                 "Rocket weapon used on enemy cell");
 
-        Thread.sleep(2000);
+        Thread.sleep(10000);
     }
 }
