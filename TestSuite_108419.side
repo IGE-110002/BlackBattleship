@@ -1,0 +1,37 @@
+{
+  "id": "57fefd0b-d14e-4e51-ab06-07668a3b050b",
+  "version": "2.0",
+  "name": "TestSuite_108419",
+  "url": "",
+  "tests": [{
+    "id": "8cf23b68-b91e-4602-a8b7-dcc0507fdc0e",
+    "name": "Untitled",
+    "commands": []
+  }, {
+    "id": "b4b6d623-ba38-4836-b710-d33779a3c646",
+    "name": "Start Game vs Robot",
+    "commands": []
+  }, {
+    "id": "15644549-7687-4851-a3e0-8e8e2b5ccc99",
+    "name": "Attack Enemy Cell",
+    "commands": []
+  }, {
+    "id": "0a10803f-9e95-456c-95ad-59f0e2c456a9",
+    "name": "Resign Game",
+    "commands": []
+  }, {
+    "id": "23e9970d-a6f6-45ac-924c-f945ce3c9cd3",
+    "name": "Cancel Resign",
+    "commands": []
+  }],
+  "suites": [{
+    "id": "4996f9ce-9877-412e-aa1e-404dc15c6ac9",
+    "name": "Default Suite",
+    "persistSession": false,
+    "parallel": false,
+    "timeout": 300,
+    "tests": ["8cf23b68-b91e-4602-a8b7-dcc0507fdc0e"]
+  }],
+  "urls": [],
+  "plugins": []
+}

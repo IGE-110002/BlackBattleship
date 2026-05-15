@@ -73,10 +73,25 @@ public class OnlineGamePage {
     public void enterNickname(String nickname)
             throws InterruptedException {
 
-        Thread.sleep(2000);
+        Thread.sleep(3000);
 
-        driver.findElement(nicknameField)
-                .sendKeys(nickname);
+        WebElement input =
+                driver.findElement(nicknameField);
+
+        ((JavascriptExecutor) driver).executeScript("""
+            const input = arguments[0];
+            const value = arguments[1];
+
+            input.scrollIntoView({block: 'center'});
+            input.focus();
+            input.value = value;
+
+            input.dispatchEvent(new Event('input', { bubbles: true }));
+            input.dispatchEvent(new Event('change', { bubbles: true }));
+            input.dispatchEvent(new KeyboardEvent('keyup', { bubbles: true }));
+        """, input, nickname);
+
+        System.out.println("Nickname entered");
     }
 
     public void clickContinue()
