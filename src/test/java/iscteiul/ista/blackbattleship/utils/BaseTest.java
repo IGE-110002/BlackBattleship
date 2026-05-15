@@ -30,9 +30,13 @@ public class BaseTest {
 
     @AfterEach
     public void tearDown() throws InterruptedException {
-        Thread.sleep(10000);
+        Thread.sleep(getBrowserCloseDelayMs());
         if (driver != null) {
             driver.quit();
         }
+    }
+
+    protected long getBrowserCloseDelayMs() {
+        return 10000;
     }
 }
