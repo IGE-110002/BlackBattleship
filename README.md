@@ -23,6 +23,7 @@ Grupo TP05-5
 4. Como utilizador convidado (Guest), quero cancelar a desistência para continuar a partida.
 
 ## User Stories - 121008
+
 5. Como utilizador convidado (Guest), quero abrir o menu de emojis para escolher uma reação durante a partida.
 
 6. Como utilizador convidado (Guest), quero enviar um emoji para reagir durante a partida.
@@ -42,10 +43,11 @@ Grupo TP05-5
 12. Como utilizador, quero alterar o modo escuro da aplicação nas definições.
 
 ## User Stories - 110772
-13. Como utilizador registado (Registered User), quero consultar o histórico de partidas para visualizar jogos anteriores.
 
-14. Como utilizador registado (Registered User), quero consultar o meu perfil para visualizar as minhas informações de jogador.
+13. Como utilizador convidado (Guest), quero criar uma competição para organizar jogos com outros jogadores.
 
-15. Como utilizador registado (Registered User), quero alterar o meu display name para personalizar o meu perfil.
+14. Como utilizador convidado (Guest), quero criar um jogo com um amigo para poder partilhar o link de convite.
 
-16. Como utilizador registado (Registered User), quero aceder à página Home para consultar os jogos disponíveis.
+15. Como utilizador convidado (Guest), quero inserir um nickname antes de entrar numa competição para ser identificado no jogo.
+
+16. Como utilizador convidado (Guest), quero voltar à página inicial para consultar os modos de jogo disponíveis.
