@@ -11,11 +11,6 @@ import org.junit.jupiter.api.Test;
  */
 public class ResignGameTest extends BaseTest {
 
-    @Override
-    protected long getBrowserCloseDelayMs() {
-        return 30000;
-    }
-
     @Test
     public void testResignGame() {
 

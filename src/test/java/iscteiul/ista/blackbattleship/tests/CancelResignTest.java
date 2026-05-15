@@ -17,7 +17,7 @@ public class CancelResignTest extends BaseTest {
         CancelResignTestPage page =
                 new CancelResignTestPage(driver);
 
-        page.startGuestGame("ES-Project");
+        page.startGuestGame("ES_Project");
         page.cancelResignationFlow();
 
         Assertions.assertTrue(

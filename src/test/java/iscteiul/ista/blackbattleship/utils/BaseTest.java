@@ -37,6 +37,6 @@ public class BaseTest {
     }
 
     protected long getBrowserCloseDelayMs() {
-        return 10000;
+        return 5000;
     }
 }
