@@ -1,21 +1,27 @@
 package iscteiul.ista.blackbattleship.pages;
 
+import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.TakesScreenshot;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.OutputType;
 
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.Map;
 
 /**
- * Robust WeaponPage implementation:
- * - DOM-first detection with many attribute checks and retries
- * - Board-aware enemy cell clicking with multiple fallbacks
- * - Proper polling for weapon effect detection
+ * WeaponPage: robust selection/use of special weapons and chat helper methods.
+ *
+ * This version constructs JS scripts using StringBuilder to avoid fragile
+ * long literal concatenations and problematic escape sequences.
  */
 public class WeaponPage {
 
@@ -27,516 +33,373 @@ public class WeaponPage {
         this.js = (JavascriptExecutor) driver;
     }
 
-    /**
-     * Capture screenshot + DOM diagnostics.
-     */
-    public void captureWeaponDiagnostics() throws InterruptedException {
-
-        Thread.sleep(500);
-
+    public void captureDiagnostics(String prefix) {
         try {
-
-            String ts = LocalDateTime.now()
-                    .format(DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss"));
-
+            String ts = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss"));
             String out = "target/debug-screenshots";
-
             Files.createDirectories(Paths.get(out));
-
-            File screenshot =
-                    ((TakesScreenshot) driver)
-                            .getScreenshotAs(OutputType.FILE);
-
-            String shot =
-                    out + File.separator + "weapon-" + ts + ".png";
-
-            Files.copy(screenshot.toPath(), Paths.get(shot));
-
-            System.out.println(
-                    "✅ Weapon screenshot saved: " + shot
-            );
-
+            File screenshot = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
+            String shot = out + File.separator + prefix + "-" + ts + ".png";
+            Files.copy(screenshot.toPath(), Paths.get(shot), StandardCopyOption.REPLACE_EXISTING);
+            System.out.println("✅ Saved diagnostics: " + shot);
         } catch (Exception e) {
-
-            System.err.println(
-                    "Error capturing diagnostics: "
-                            + e.getMessage()
-            );
+            System.err.println("Failed to save diagnostics: " + e.getMessage());
         }
     }
 
-    /**
-     * Scan an area and click first clickable element.
-     */
-    private Object scanAndClickArea(
-            int x1,
-            int y1,
-            int x2,
-            int y2,
-            int step
-    ) {
+    @SuppressWarnings("unchecked")
+    private Map<String, Object> scanAndClickArea(int x1, int y1, int x2, int y2, int step) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("const x1 = arguments[0], y1 = arguments[1], x2 = arguments[2], y2 = arguments[3], step = arguments[4];\n");
+        sb.append("function doClick(el){ if(!el) return false; try{ el.focus && el.focus(); el.scrollIntoView && el.scrollIntoView({block:'center'}); }catch(e){} try{ el.click && el.click(); return true;}catch(e){} try{ el.dispatchEvent && el.dispatchEvent(new MouseEvent('click',{bubbles:true})); return true;}catch(e){} return false; }\n");
+        sb.append("function isClickable(el){ if(!el) return false; try{ const tag=(el.tagName||'').toUpperCase(); if(tag==='BUTTON'||tag==='A') return true; if(el.getAttribute && (el.getAttribute('role')||'').toLowerCase().includes('button')) return true; if(el.hasAttribute && el.hasAttribute('onclick')) return true; const s=window.getComputedStyle(el); if(s && s.pointerEvents==='none') return false; if(s && s.cursor && s.cursor.includes('pointer')) return true; return false; }catch(e){return false;} }\n");
+        sb.append("for(let x=x1;x<=x2;x+=step){ for(let y=y1;y<=y2;y+=step){ try{ const el=document.elementFromPoint(x,y); if(!el) continue; if(isClickable(el)){ if(doClick(el)) return {ok:true, method:'scan', tag:el.tagName, x:x, y:y, text:(el.textContent||'').substring(0,80)}; } const p = el.closest && el.closest('button, [role=\"button\"], a'); if(p){ if(doClick(p)) return {ok:true, method:'scan-parent', tag:p.tagName, x:x, y:y, text:(p.textContent||'').substring(0,80)}; } }catch(e){} } }\n");
+        sb.append("return { ok:false, reason:'no-clickable-found' };\n");
 
-        return js.executeScript("""
-            const x1 = arguments[0];
-            const y1 = arguments[1];
-            const x2 = arguments[2];
-            const y2 = arguments[3];
-            const step = arguments[4];
-
-            function isClickable(el) {
-
-                if (!el) return false;
-
-                const tag = el.tagName ? el.tagName.toUpperCase() : '';
-
-                if (
-                    tag === 'BUTTON' ||
-                    tag === 'A' ||
-                    el.hasAttribute && el.hasAttribute('onclick')
-                ) {
-                    return true;
-                }
-
-                const role =
-                    (el.getAttribute && el.getAttribute('role')) || '';
-
-                if (role.toLowerCase().includes('button')) {
-                    return true;
-                }
-
-                const style = window.getComputedStyle(el);
-                if (style && style.pointerEvents === 'none') return false;
-
-                return false;
-            }
-
-            for (let x = x1; x <= x2; x += step) {
-
-                for (let y = y1; y <= y2; y += step) {
-
-                    const el = document.elementFromPoint(x, y);
-
-                    if (!el) continue;
-
-                    if (isClickable(el)) {
-
-                        try {
-                            el.click();
-                        } catch (e) {
-                            el.dispatchEvent(
-                                new MouseEvent('click', {
-                                    bubbles: true
-                                })
-                            );
-                        }
-
-                        const r = el.getBoundingClientRect();
-
-                        return {
-                            ok: true,
-                            x: Math.round(r.left),
-                            y: Math.round(r.top),
-                            tag: el.tagName,
-                            text: (el.textContent || '').trim().substring(0, 80)
-                        };
-                    }
-                }
-            }
-
-            return { ok: false };
-        """, x1, y1, x2, y2, step);
+        Object res = js.executeScript(sb.toString(), x1, y1, x2, y2, step);
+        if (res instanceof Map) return (Map<String, Object>) res;
+        return Map.of("ok", false);
     }
 
-    /**
-     * Select special weapon automatically.
-     */
-    public void selectRocketWeapon()
-            throws InterruptedException {
+    @SuppressWarnings("unchecked")
+    private Map<String, Object> bruteForceClicks(int x1, int y1, int x2, int y2, int attempts) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("const x1=arguments[0], y1=arguments[1], x2=arguments[2], y2=arguments[3], attempts=arguments[4];\n");
+        sb.append("function doClick(el){ if(!el) return false; try{ el.focus && el.focus(); el.scrollIntoView && el.scrollIntoView({block:'center'}); }catch(e){} try{ el.click && el.click(); return true;}catch(e){} try{ el.dispatchEvent && el.dispatchEvent(new MouseEvent('click',{bubbles:true})); return true;}catch(e){} return false; }\n");
+        sb.append("for(let i=0;i<attempts;i++){ const rx = Math.floor(x1 + Math.random()*(x2-x1)); const ry = Math.floor(y1 + Math.random()*(y2-y1)); try{ const el = document.elementFromPoint(rx,ry); if(el && doClick(el)) return { ok:true, x:rx, y:ry, attempt:i }; const p = el && el.closest && el.closest('button, [role=\"button\"], a'); if(p && doClick(p)) return { ok:true, x:rx, y:ry, attempt:i, parent:true }; }catch(e){} }\n");
+        sb.append("return { ok:false, reason:'random-clicks-failed' };\n");
 
-        // Try for up to ~6 seconds with short polls
-        final int attempts = 12;
+        Object out = js.executeScript(sb.toString(), x1, y1, x2, y2, attempts);
+        if (out instanceof Map) return (Map<String, Object>) out;
+        return Map.of("ok", false);
+    }
+
+    @SuppressWarnings("unchecked")
+    public void selectAndActivateWeapon() throws InterruptedException {
+        final int tries = 8;
         final int sleepMs = 500;
 
-        System.out.println("selectRocketWeapon: trying DOM-first...");
-
-        for (int i = 0; i < attempts; i++) {
-
+        for (int attempt = 0; attempt < tries; attempt++) {
             try {
-                Object domRes = js.executeScript(
-                        // Search a wide variety of attributes and text for weapon-related elements
-                        """
-                        const keywords = [
-                            'rocket','missile','bomb','weapon','special','nuke','airstrike','strike','torpedo'
-                        ];
+                StringBuilder sb = new StringBuilder();
 
-                        const attrKeys = [
-                            'aria-label','title','alt','data-weapon','data-action','data-testid','data-test'
-                        ];
+                sb.append("function doClick(el){");
+                sb.append(" if(!el) return false;");
+                sb.append(" try{ el.focus && el.focus(); }catch(e){}");
+                sb.append(" try{ el.scrollIntoView && el.scrollIntoView({block:'center'}); }catch(e){}");
+                sb.append(" try{ el.click && el.click(); return true; }catch(e){}");
+                sb.append(" try{ el.dispatchEvent && el.dispatchEvent(new MouseEvent('click',{bubbles:true})); return true; }catch(e){}");
+                sb.append(" return false;");
+                sb.append("}\n");
 
-                        function textOf(el){
-                            try { return (el.textContent || '').toLowerCase(); } catch(e) { return ''; }
-                        }
+                sb.append("const textNeedle='attack your opponent';\n");
+                sb.append("const nodes=Array.from(document.querySelectorAll('h1,h2,h3,div,span'))");
+                sb.append(".filter(n=>(n.textContent||'').toLowerCase().includes(textNeedle));\n");
 
-                        function attrsOf(el) {
-                            const res = [];
-                            for (const a of attrKeys) {
-                                try {
-                                    const v = el.getAttribute && el.getAttribute(a);
-                                    if (v) res.push(v.toString().toLowerCase());
-                                } catch(e) {}
-                            }
-                            return res.join(' ');
-                        }
+                sb.append("if(nodes.length){");
+                sb.append(" let h=nodes[0];");
+                sb.append(" let sib=h.nextElementSibling;");
+                sb.append(" let depth=0;");
+                sb.append(" while(sib && depth<10){");
+                sb.append("  try{");
+                sb.append("   const weapons=Array.from(sib.querySelectorAll('button, img, [role=\"button\"], div'))");
+                sb.append("   .filter(e=>{");
+                sb.append("     try{");
+                sb.append("       const r=e.getBoundingClientRect();");
+                sb.append("       const txt=(e.textContent||'').toLowerCase();");
+                sb.append("       return r && r.width>25 && r.height>25");
+                sb.append("       && !txt.includes('abort') && !txt.includes('resign')");
+                sb.append("       && !txt.includes('quit') && !txt.includes('leave')");
+                sb.append("       && !txt.includes('exit');");
+                sb.append("     }catch(e){return false;}");
+                sb.append("   });");
 
-                        const candidates = Array.from(document.querySelectorAll('button, [role=\"button\"], a, div, span, img, input[type=\"button\"], input[type=\"image\"]'))
-                            .filter(e => {
-                                try {
-                                    const rect = e.getBoundingClientRect();
-                                    return rect && rect.width > 2 && rect.height > 2 && window.getComputedStyle(e).visibility !== 'hidden';
-                                } catch(err) { return false; }
-                            });
+                sb.append("   if(weapons.length){");
+                sb.append("     const index=Math.floor(Math.random()*weapons.length);");
+                sb.append("     const weapon=weapons[index];");
+                sb.append("     weapon.style.outline='5px solid red';");
+                sb.append("     weapon.style.boxShadow='0 0 15px red';");
+                sb.append("     const txt=(weapon.textContent||weapon.alt||weapon.title||'weapon-'+index).trim();");
+                sb.append("     if(doClick(weapon)){");
+                sb.append("       return {ok:true, method:'random-header-sibling', selectedIndex:index, total:weapons.length, weaponText:txt};");
+                sb.append("     }");
+                sb.append("   }");
+                sb.append("  }catch(e){}");
+                sb.append("  sib=sib.nextElementSibling;");
+                sb.append("  depth++;");
+                sb.append(" }");
+                sb.append("}\n");
 
-                        for (const e of candidates) {
+                sb.append("return {ok:false, reason:'random-weapon-not-found'};");
 
-                            const txt = textOf(e);
-                            const attrs = attrsOf(e);
-                            const cls = (e.className || '').toString().toLowerCase();
-                            const html = (e.innerHTML || '').toString().toLowerCase();
+                Object out = js.executeScript(sb.toString());
 
-                            const hay = txt + ' ' + attrs + ' ' + cls + ' ' + html;
-
-                            if (keywords.some(k => hay.includes(k))) {
-
-                                try {
-                                    // prefer visible clickable ancestor
-                                    let target = e;
-                                    let ancestor = e;
-                                    for (let i=0;i<6;i++){
-                                        if (!ancestor) break;
-                                        if (ancestor.tagName && (ancestor.tagName.toLowerCase() === 'button' || ancestor.getAttribute && ancestor.getAttribute('role') && ancestor.getAttribute('role').toLowerCase().includes('button'))) {
-                                            target = ancestor; break;
-                                        }
-                                        ancestor = ancestor.parentElement;
-                                    }
-
-                                    target.scrollIntoView({block: 'center'});
-                                    try { target.click(); } catch(err) {
-                                        target.dispatchEvent(new MouseEvent('click', { bubbles: true }));
-                                    }
-
-                                } catch(err){
-                                    try {
-                                        e.dispatchEvent(new MouseEvent('click', { bubbles: true }));
-                                    } catch(ex){}
-                                }
-
-                                return { ok: true, text: txt };
-                            }
-                        }
-
-                        return { ok: false };
-                        """
-                );
-
-                if (domRes instanceof java.util.Map) {
-
-                    @SuppressWarnings("unchecked")
-                    java.util.Map<String, Object> map =
-                            (java.util.Map<String, Object>) domRes;
-
-                    if (Boolean.TRUE.equals(map.get("ok"))) {
-
-                        System.out.println("✅ Special weapon selected (DOM)");
-                        Thread.sleep(500);
-                        return;
-                    }
+                if (out instanceof Map && Boolean.TRUE.equals(((Map<String, Object>) out).get("ok"))) {
+                    System.out.println("✅ Random weapon selected: " + out);
+                    Thread.sleep(700);
+                    return;
+                } else {
+                    System.out.println("selectAndActivateWeapon random attempt result=" + out);
                 }
 
             } catch (Exception e) {
-                // ignore and retry
-                System.err.println("DOM attempt error: " + e.getMessage());
+                System.err.println("selectAndActivateWeapon random attempt error: " + e.getMessage());
             }
 
             Thread.sleep(sleepMs);
         }
 
-        // Fallback: try to find weapon UI at bottom-right or a weapon panel near the board
-        System.out.println("Fallback scanning for weapon UI...");
-
-        Object dims = js.executeScript("""
-            return { w: window.innerWidth, h: window.innerHeight };
-        """);
-
-        @SuppressWarnings("unchecked")
-        java.util.Map<String, Object> d = (java.util.Map<String, Object>) dims;
-
-        int w = ((Number) d.get("w")).intValue();
-        int h = ((Number) d.get("h")).intValue();
-
-        // first try bottom-right area
-        Object scanRes = scanAndClickArea(
-                Math.max(w / 2, w - 600),
-                Math.max(100, h - 400),
-                w - 20,
-                h - 60,
-                14
-        );
-
-        if (scanRes instanceof java.util.Map) {
-
-            @SuppressWarnings("unchecked")
-            java.util.Map<String, Object> m = (java.util.Map<String, Object>) scanRes;
-
-            if (Boolean.TRUE.equals(m.get("ok"))) {
-                System.out.println("✅ Weapon clicked by scan (bottom/right)");
-                Thread.sleep(600);
-                return;
-            }
-        }
-
-        // try searching for a dedicated weapon panel or sidebar by selectors
-        try {
-            Object panelClick = js.executeScript("""
-                const sel = [
-                    '[data-panel*=\"weapon\"]',
-                    '[data-testid*=\"weapon\"]',
-                    '.weapons', '.weapon-panel', '.special-weapons', '.special-weapon'
-                ];
-
-                for (const s of sel) {
-                    const el = document.querySelector(s);
-                    if (el) {
-                        try { el.scrollIntoView({block:'center'}); } catch(e) {}
-                        try { el.click(); } catch(e) { el.dispatchEvent(new MouseEvent('click',{bubbles:true})); }
-                        return { ok: true, sel: s, tag: el.tagName };
-                    }
-                }
-                return { ok: false };
-            """);
-
-            if (panelClick instanceof java.util.Map) {
-                @SuppressWarnings("unchecked")
-                java.util.Map<String, Object> m = (java.util.Map<String, Object>) panelClick;
-                if (Boolean.TRUE.equals(m.get("ok"))) {
-                    System.out.println("✅ Weapon panel clicked (selector)");
-                    Thread.sleep(600);
-                    return;
-                }
-            }
-        } catch (Exception ignored) {}
-
-        throw new IllegalStateException("Failed to select weapon.");
+        captureDiagnostics("random-weapon-select-fail");
+        throw new IllegalStateException("Failed to select random weapon.");
     }
-
-    /**
-     * Use special weapon on enemy cell.
-     */
-    public void useRocketOnEnemyCell()
-            throws InterruptedException {
-
-        Thread.sleep(300);
-
-        System.out.println("Using special weapon...");
-
-        // Try several progressive strategies: click a discovered enemy cell element, then grid fallback
-        final int attempts = 8;
+    @SuppressWarnings("unchecked")
+    public void useWeaponOnEnemyCell() throws InterruptedException {
+        final int tries = 10;
         final int sleepMs = 600;
 
-        for (int attempt = 0; attempt < attempts; attempt++) {
+        for (int i = 0; i < tries; i++) {
             try {
-                Object res = js.executeScript(
-                        // JS tries many selectors to find an enemy cell and click it
-                        """
-                        function tryClickCandidate(el) {
-                            try {
-                                el.scrollIntoView({block:'center'});
-                            } catch(e){}
-                            try { el.click(); return true; } catch(e) {
-                                try { el.dispatchEvent(new MouseEvent('click',{bubbles:true})); return true; } catch(e) {}
-                            }
-                            return false;
-                        }
+                StringBuilder sb = new StringBuilder();
 
-                        // 1) Try cells with data attributes
-                        const selectors = [
-                            '[data-x][data-y][data-owner]', // generic cell with owner
-                            '[data-x][data-y]:not([data-owner="me"])',
-                            '[data-coord][data-owner]:not([data-owner*="me"])',
-                            '[data-player="opponent"] *[data-x]',
-                            '.opponent .cell, .enemy .cell, .opponent-cell, .enemy-cell',
-                            '[role=\"grid\"] [role=\"gridcell\"]',
-                            '.board.opponent td, .board.opponent div.cell'
-                        ];
+                sb.append("function doClick(el){");
+                sb.append(" if(!el) return false;");
+                sb.append(" try{ el.focus && el.focus(); }catch(e){}");
+                sb.append(" try{ el.click && el.click(); return true;}catch(e){}");
+                sb.append(" try{ el.dispatchEvent && el.dispatchEvent(new MouseEvent('click',{bubbles:true})); return true;}catch(e){}");
+                sb.append(" return false;");
+                sb.append("}\n");
 
-                        for (const s of selectors) {
-                            try {
-                                const els = Array.from(document.querySelectorAll(s)).filter(e => {
-                                    try {
-                                        const r = e.getBoundingClientRect();
-                                        return r && r.width > 2 && r.height > 2;
-                                    } catch(e){ return false; }
-                                });
-                                if (els.length) {
-                                    // prefer first untargeted / clickable cell
-                                    for (const e of els) {
-                                        // heuristic: avoid already-hit markers (text or classes)
-                                        const cls = (e.className || '').toLowerCase();
-                                        const txt = (e.textContent || '').toLowerCase();
-                                        if (cls.includes('hit') || cls.includes('miss') || txt.includes('x') || txt.includes('hit')) continue;
-                                        if (tryClickCandidate(e)) return { ok: true, method: 'selector', sel: s, count: els.length };
-                                    }
-                                    // otherwise click first
-                                    const e = els[0];
-                                    if (tryClickCandidate(e)) return { ok: true, method: 'selector-first', sel: s, count: els.length };
-                                }
-                            } catch(e){}
-                        }
+                sb.append("const selectors=['.opponent .cell','.enemy .cell','.opponent-cell','.enemy-cell','.opponent td','.enemy td','[role=\"grid\"] [role=\"gridcell\"]'];\n");
+                sb.append("let cells=[];\n");
+                sb.append("for(const s of selectors){");
+                sb.append(" try{");
+                sb.append("   cells=Array.from(document.querySelectorAll(s)).filter(e=>{");
+                sb.append("     const r=e.getBoundingClientRect();");
+                sb.append("     const cls=(e.className||'').toLowerCase();");
+                sb.append("     const txt=(e.textContent||'').toLowerCase();");
+                sb.append("     return r && r.width>3 && r.height>3 && !cls.includes('hit') && !cls.includes('miss') && !txt.includes('x');");
+                sb.append("   });");
+                sb.append("   if(cells.length) break;");
+                sb.append(" }catch(e){}");
+                sb.append("}\n");
 
-                        // 2) Try to find a board element and compute a 10x10 grid click
-                        const boardSelectors = [
-                            '.opponent', '.enemy', '#opponent', '#enemy', '.opponent-board', '.enemy-board', '.board.opponent'
-                        ];
+                sb.append("if(cells.length){");
+                sb.append(" const index=Math.floor(Math.random()*cells.length);");
+                sb.append(" const target=cells[index];");
+                sb.append(" target.style.outline='5px solid blue';");
+                sb.append(" target.style.boxShadow='0 0 18px blue';");
+                sb.append(" target.style.borderRadius='50%';");
+                sb.append(" if(doClick(target)){");
+                sb.append("   return {ok:true, method:'random-opponent-cell', selectedCell:index, totalCells:cells.length};");
+                sb.append(" }");
+                sb.append("}\n");
 
-                        for (const bs of boardSelectors) {
-                            try {
-                                const b = document.querySelector(bs);
-                                if (!b) continue;
-                                const rect = b.getBoundingClientRect();
-                                if (!rect || rect.width < 10 || rect.height < 10) continue;
+                sb.append("return {ok:false, reason:'no-random-opponent-cell-found'};");
 
-                                // attempt to detect internal grid cells
-                                const innerCells = Array.from(b.querySelectorAll('[data-x][data-y], td, div.cell, .cell'));
-                                if (innerCells.length >= 10) {
-                                    for (const c of innerCells) {
-                                        const cls = (c.className || '').toLowerCase();
-                                        const txt = (c.textContent || '').toLowerCase();
-                                        if (cls.includes('hit') || cls.includes('miss') || txt.includes('hit') || txt.includes('x')) continue;
-                                        if (tryClickCandidate(c)) return { ok: true, method: 'board-detected-cell', sel: bs, cells: innerCells.length };
-                                    }
-                                }
+                Object out = js.executeScript(sb.toString());
 
-                                // fallback: assume 10x10 grid, click center of a cell that is likely not yet targeted
-                                const rows = 10;
-                                const cols = 10;
-                                for (let r=0;r<rows;r++) {
-                                    for (let c=0;c<cols;c++) {
-                                        // choose a cell near the top-left quadrant first
-                                        const cx = Math.round(rect.left + (c + 0.5) * rect.width / cols);
-                                        const cy = Math.round(rect.top + (r + 0.5) * rect.height / rows);
-                                        const el = document.elementFromPoint(cx, cy);
-                                        if (!el) continue;
-                                        const cls = (el.className || '').toLowerCase();
-                                        const txt = (el.textContent || '').toLowerCase();
-                                        if (cls.includes('hit') || cls.includes('miss') || txt.includes('hit') || txt.includes('x')) continue;
-                                        if (tryClickCandidate(el)) return { ok: true, method: 'board-grid-click', sel: bs, r: r, c: c };
-                                    }
-                                }
-
-                                // if all failed, still click board center
-                                const centerX = Math.round(rect.left + rect.width/2);
-                                const centerY = Math.round(rect.top + rect.height/2);
-                                const el = document.elementFromPoint(centerX, centerY);
-                                if (el && tryClickCandidate(el)) return { ok: true, method: 'board-center', sel: bs };
-                            } catch(e){}
-                        }
-
-                        // 3) Final fallback: click center of the viewport area where enemy is likely located (center-left/center)
-                        try {
-                            const w = window.innerWidth;
-                            const h = window.innerHeight;
-                            const cx = Math.round(w * 0.65);
-                            const cy = Math.round(h * 0.45);
-                            const el = document.elementFromPoint(cx, cy);
-                            if (el) {
-                                try { el.click(); } catch(e) { el.dispatchEvent(new MouseEvent('click',{bubbles:true})); }
-                                return { ok: true, method: 'viewport-fallback', x: cx, y: cy };
-                            }
-                        } catch(e){}
-
-                        return { ok: false };
-                        """
-                );
-
-                if (res instanceof java.util.Map) {
-                    @SuppressWarnings("unchecked")
-                    java.util.Map<String, Object> map = (java.util.Map<String, Object>) res;
-                    if (Boolean.TRUE.equals(map.get("ok"))) {
-                        System.out.println("✅ Enemy cell clicked: " + map);
-                        Thread.sleep(600);
-                        return;
-                    }
+                if (out instanceof Map && Boolean.TRUE.equals(((Map<String, Object>) out).get("ok"))) {
+                    System.out.println("✅ Random opponent target selected and clicked: " + out);
+                    Thread.sleep(800);
+                    return;
+                } else {
+                    System.out.println("useWeaponOnEnemyCell random attempt: " + out);
                 }
 
             } catch (Exception e) {
-                // ignore and retry
-                System.err.println("useRocket attempt error: " + e.getMessage());
+                System.err.println("useWeaponOnEnemyCell random attempt error: " + e.getMessage());
             }
 
             Thread.sleep(sleepMs);
         }
 
-        throw new IllegalStateException("Failed to click enemy cell.");
+        captureDiagnostics("random-weapon-use-fail");
+        throw new IllegalStateException("Failed to use weapon on random opponent cell.");
     }
 
-    /**
-     * Wait for a visible sign that the special weapon was used.
-     */
-    public boolean waitForWeaponEffect(int timeoutSeconds)
-            throws InterruptedException {
-
-        final int pollMs = 600;
-        final long end = System.currentTimeMillis() + timeoutSeconds * 1000L;
-
-        System.out.println("Waiting up to " + timeoutSeconds + "s for weapon effect...");
-
+    @SuppressWarnings("unchecked")
+    public boolean waitForWeaponEffect(int timeoutSeconds) throws InterruptedException {
+        long end = System.currentTimeMillis() + timeoutSeconds * 1000L;
+        final int poll = 700;
         while (System.currentTimeMillis() < end) {
-
             try {
+                StringBuilder sb = new StringBuilder();
+                sb.append("const t = (document.body && document.body.innerText || '').toLowerCase();\n");
+                sb.append("const keywords = ['rocket','bomb','missile','special','boom','hit','miss','sank','destroyed','explosion','blast'];\n");
+                sb.append("const found = keywords.some(k=> t.includes(k));\n");
+                sb.append("const visual = Array.from(document.querySelectorAll('*')).some(el=>{ try{ const cl=(el.className||'').toLowerCase(); const html=(el.outerHTML||'').toLowerCase(); if(cl.includes('explosion')||html.includes('explosion')||cl.includes('boom')||html.includes('boom')) return true; return false;}catch(e){return false;} });\n");
+                sb.append("return { ok: found || visual, text: found, visual: visual };\n");
 
-                Object result = js.executeScript("""
-                    const text = (document.body && document.body.innerText || '').toLowerCase();
-
-                    const keywords = [
-                        'rocket','bomb','missile','special','boom','hit','miss','sank','destroyed','explosion','blast'
-                    ];
-
-                    const foundText = keywords.some(k => text.includes(k));
-
-                    const visualEffect = Array.from(document.querySelectorAll('*')).some(el => {
-                        try {
-                            const cls = (el.className || '').toString().toLowerCase();
-                            const html = (el.outerHTML || '').toLowerCase();
-                            if (cls.includes('explosion') || cls.includes('boom') || cls.includes('blast')) return true;
-                            if (html.includes('explosion') || html.includes('boom') || html.includes('blast')) return true;
-                            return false;
-                        } catch(e) { return false; }
-                    });
-
-                    return { success: foundText || visualEffect, textFound: foundText, visualFound: visualEffect };
-                """);
-
-                if (result instanceof java.util.Map) {
-
-                    @SuppressWarnings("unchecked")
-                    java.util.Map<String, Object> map =
-                            (java.util.Map<String, Object>) result;
-
-                    if ((boolean) map.get("success")) {
-
-                        System.out.println("✅ Weapon effect detected (textFound=" + map.get("textFound") + ", visualFound=" + map.get("visualFound") + ")");
-                        return true;
-                    }
+                Object out = js.executeScript(sb.toString());
+                if (out instanceof Map && Boolean.TRUE.equals(((Map<String, Object>) out).get("ok"))) {
+                    System.out.println("✅ Weapon effect detected: " + out);
+                    return true;
                 }
-
             } catch (Exception e) {
-                // ignore and continue polling
                 System.err.println("waitForWeaponEffect poll error: " + e.getMessage());
             }
-
-            Thread.sleep(pollMs);
+            Thread.sleep(poll);
         }
-
-        System.out.println("⚠️ Weapon effect not detected within timeout");
+        System.out.println("⚠️ waitForWeaponEffect: timeout");
         return false;
     }
+
+    @SuppressWarnings("unchecked")
+    public void sendChatMessage(String message) throws InterruptedException {
+        final int tries = 6;
+        final int sleepMs = 400;
+
+        boolean injected = false;
+        for (int i = 0; i < tries && !injected; i++) {
+            try {
+                StringBuilder sb = new StringBuilder();
+                sb.append("const msg = arguments[0];\n");
+                sb.append("function dispatchInput(el, v){ try{ el.focus && el.focus(); }catch(e){} try{ if(el.tagName && el.tagName.toLowerCase()==='textarea' || el.tagName && el.tagName.toLowerCase()==='input'){ el.value = v; } else { el.textContent = v; el.innerText = v; } }catch(e){} try{ el.setAttribute && el.setAttribute('value', v); }catch(e){}\n");
+                sb.append(" try{ el.dispatchEvent && el.dispatchEvent(new Event('input', {bubbles:true})); }catch(e){} try{ el.dispatchEvent && el.dispatchEvent(new Event('change', {bubbles:true})); }catch(e){} }\n");
+                sb.append("const panelSelectors = ['[data-testid*=\"chat\"]','[data-test*=\"chat\"]','[data-panel*=\"chat\"]','.chat','.chat-panel','.chat-area','.chat-box'];\n");
+                sb.append("let panel=null; for(const s of panelSelectors){ try{ const p=document.querySelector(s); if(p){ panel=p; break; } }catch(e){} }\n");
+                sb.append("if(!panel){ const cands=Array.from(document.querySelectorAll('div,section,aside')); for(const c of cands){ try{ const text=(c.innerText||'').toLowerCase(); if(text.includes('chat')||text.includes('messages')){ panel=c; break; } }catch(e){} } }\n");
+                sb.append("const root = panel || document;\n");
+                sb.append("const inputSelectors = ['textarea', 'input[type=\"text\"]', '[contenteditable=\"true\"]'];\n");
+                sb.append("let input=null; for(const s of inputSelectors){ try{ const el=root.querySelector(s); if(el){ input=el; break; } }catch(e){} }\n");
+                sb.append("if(!input){ return { ok:false, reason:'no-input', panelFound: !!panel } }\n");
+                sb.append("try{ if(input.getAttribute && input.getAttribute('contenteditable')==='true'){ input.focus && input.focus(); input.innerText = msg; input.textContent = msg; try{ input.dispatchEvent && input.dispatchEvent(new Event('input',{bubbles:true})); }catch(e){} } else { dispatchInput(input, msg); } }catch(e){}\n");
+                sb.append("return { ok:true, method:'injected', panelPresent: !!panel, inputTag: input.tagName || '', isContentEditable: input.getAttribute && input.getAttribute('contenteditable')==='true' };\n");
+
+                Object out = js.executeScript(sb.toString(), message);
+                if (out instanceof Map && Boolean.TRUE.equals(((Map<String, Object>) out).get("ok"))) {
+                    injected = true;
+                    System.out.println("✅ Message injected into input (method=injected) info=" + out);
+                    Thread.sleep(450); // give UI a little time to enable send
+                    break;
+                } else {
+                    System.out.println("sendChatMessage: inject attempt result=" + out);
+                }
+            } catch (Exception e) {
+                System.err.println("sendChatMessage: inject attempt error: " + e.getMessage());
+            }
+            Thread.sleep(sleepMs);
+        }
+
+        if (!injected) {
+            captureDiagnostics("chat-send-no-input");
+            throw new IllegalStateException("Failed to locate chat input to send message (see target/debug-screenshots).");
+        }
+// Replace only the clickedSend section with this
+        boolean clickedSend = false;
+        for (int i = 0; i < 6 && !clickedSend; i++) {
+            try {
+                StringBuilder sb = new StringBuilder();
+
+                sb.append("const input = document.querySelector('textarea, input[type=\"text\"], [contenteditable=\"true\"]');\n");
+                sb.append("if(!input) return {ok:false, reason:'no-input'};\n");
+                sb.append("const r = input.getBoundingClientRect();\n");
+                sb.append("const x = Math.round(r.right + 35);\n");
+                sb.append("const y = Math.round(r.top + r.height / 2);\n");
+                sb.append("const el = document.elementFromPoint(x, y);\n");
+                sb.append("if(!el) return {ok:false, reason:'no-send-at-point', x:x, y:y};\n");
+                sb.append("const btn = (el.closest && el.closest('button, [role=\"button\"], a, div')) || el;\n");
+                sb.append("try{ btn.style.outline='5px solid green'; }catch(e){}\n");
+                sb.append("try{ btn.click(); }catch(e){ try{ btn.dispatchEvent(new MouseEvent('click',{bubbles:true,clientX:x,clientY:y})); }catch(e2){} }\n");
+                sb.append("return {ok:true, method:'send-button-near-input', x:x, y:y, tag:btn.tagName, text:(btn.innerText||btn.textContent||'').substring(0,80)};\n");
+
+                Object out = js.executeScript(sb.toString());
+
+                if (out instanceof Map && Boolean.TRUE.equals(((Map<String, Object>) out).get("ok"))) {
+                    System.out.println("✅ Clicked chat send button near input (info=" + out + ")");
+                    clickedSend = true;
+                    Thread.sleep(600);
+                    break;
+                } else {
+                    System.out.println("sendChatMessage send-button attempt result=" + out);
+                }
+            } catch (Exception e) {
+                System.err.println("sendChatMessage: send-button attempt error: " + e.getMessage());
+            }
+
+            Thread.sleep(350);
+        }
+
+        if (!clickedSend) {
+            // Try pressing Enter via JS
+            try {
+                StringBuilder sb = new StringBuilder();
+                sb.append("const panelSelectors=['[data-testid*=\"chat\"]','[data-test*=\"chat\"]','[data-panel*=\"chat\"]','.chat','.chat-panel','.chat-area','.chat-box']; let panel=null; for(const s of panelSelectors){ try{ const p=document.querySelector(s); if(p){ panel=p; break; } }catch(e){} }\n");
+                sb.append("const root=panel||document; let input = root.querySelector('textarea') || root.querySelector('input[type=\"text\"]') || root.querySelector('[contenteditable=\"true\"]') || document.querySelector('textarea') || document.querySelector('input[type=\"text\"]') || document.querySelector('[contenteditable=\"true\"]'); if(!input) return { ok:false, reason:'no-input-for-enter' } try{ input.focus && input.focus(); }catch(e){} try{ const ev=new KeyboardEvent('keydown',{key:'Enter',code:'Enter',bubbles:true}); input.dispatchEvent && input.dispatchEvent(ev); }catch(e){} return { ok:true, method:'enter-pressed-js' };\n");
+
+                Object out = js.executeScript(sb.toString());
+                if (out instanceof Map && Boolean.TRUE.equals(((Map<String, Object>) out).get("ok"))) {
+                    System.out.println("✅ Sent Enter on chat input as fallback (JS) (" + out + ")");
+                    Thread.sleep(450);
+                    clickedSend = true;
+                } else {
+                    System.out.println("Could not press Enter via JS fallback: " + out);
+                }
+            } catch (Exception e) {
+                System.err.println("sendChatMessage: Enter fallback JS error: " + e.getMessage());
+            }
+        }
+
+        if (!clickedSend) {
+            // Selenium fallback: sendKeys ENTER
+            try {
+                List<WebElement> inputs = driver.findElements(By.cssSelector("textarea, input[type='text'], [contenteditable='true']"));
+                if (!inputs.isEmpty()) {
+                    WebElement el = inputs.get(0);
+                    try {
+                        el.sendKeys(Keys.ENTER);
+                        System.out.println("✅ Sent Enter on input via Selenium Keys fallback");
+                        Thread.sleep(400);
+                        clickedSend = true;
+                    } catch (Exception e) {
+                        System.err.println("Selenium sendKeys ENTER failed: " + e.getMessage());
+                    }
+                } else {
+                    System.out.println("Selenium fallback: no inputs found to send ENTER");
+                }
+            } catch (Exception e) {
+                System.err.println("sendChatMessage: Selenium fallback error: " + e.getMessage());
+            }
+        }
+
+        boolean visible = waitForChatMessage(message, 10);
+        if (!visible) {
+            captureDiagnostics("chat-no-confirm");
+            throw new IllegalStateException("Chat message not visible after sending (see target/debug-screenshots).");
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    public boolean waitForChatMessage(String message, int timeoutSeconds) throws InterruptedException {
+        long end = System.currentTimeMillis() + timeoutSeconds * 1000L;
+        final int poll = 700;
+        String lower = message.toLowerCase().trim();
+
+        while (System.currentTimeMillis() < end) {
+            try {
+                StringBuilder sb = new StringBuilder();
+                sb.append("const needle = arguments[0];\n");
+                sb.append("const panelSelectors=['[data-testid*=\"chat\"]','[data-test*=\"chat\"]','[data-panel*=\"chat\"]','.chat','.chat-panel','.chat-area','.chat-box'];\n");
+                sb.append("for(const s of panelSelectors){ try{ const p=document.querySelector(s); if(!p) continue; const messages = Array.from(p.querySelectorAll('*')).filter(el=>{ try{ const t=(el.textContent||'').toLowerCase(); return t && t.length>0;}catch(e){return false;} }).slice(-40); for(const m of messages){ try{ const t=(m.textContent||'').toLowerCase(); if(t.includes(needle)) return { ok:true, method:'panel', selector:s, snippet:t }; }catch(e){} } }catch(e){} }\n");
+                sb.append("try{ const body=(document.body && document.body.innerText||'').toLowerCase(); if(body.includes(needle)) return { ok:true, method:'body' }; }catch(e){}\n");
+                sb.append("return { ok:false };\n");
+
+                Object found = js.executeScript(sb.toString(), lower);
+                if (found instanceof Map && Boolean.TRUE.equals(((Map<String, Object>) found).get("ok"))) {
+                    System.out.println("✅ Chat message confirmed (info=" + found + ")");
+                    return true;
+                } else {
+                    if (found instanceof Map) {
+                        System.out.println("waitForChatMessage: not found yet");
+                    }
+                }
+            } catch (Exception e) {
+                System.err.println("waitForChatMessage poll error: " + e.getMessage());
+            }
+            Thread.sleep(poll);
+        }
+        System.out.println("⚠️ waitForChatMessage: timeout");
+        return false;
+    }
+
 }

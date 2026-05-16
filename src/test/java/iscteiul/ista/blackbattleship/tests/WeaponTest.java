@@ -1,71 +1,43 @@
 package iscteiul.ista.blackbattleship.tests;
 
+import iscteiul.ista.blackbattleship.pages.OnlineGamePage;
+import iscteiul.ista.blackbattleship.pages.WeaponPage;
+import iscteiul.ista.blackbattleship.utils.BaseTest;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import iscteiul.ista.blackbattleship.pages.WeaponPage;
-import iscteiul.ista.blackbattleship.pages.OnlineGamePage;
-import iscteiul.ista.blackbattleship.utils.BaseTest;
-
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
+/**
+ * Test that selects a special weapon and uses it on an enemy cell automatically.
+ */
 public class WeaponTest extends BaseTest {
 
-
     @Test
-    public void selectWeaponTest() throws InterruptedException {
+    public void selectAndUseSpecialWeaponAutomatically() throws Exception {
 
-        System.out.println("\n📋 TEST 7: Select Special Weapon Automatically");
+        OnlineGamePage game = new OnlineGamePage(driver);
+        // Start a robot match as guest. This method exists in your codebase.
+        game.startRobotGameAsGuest();
 
-        OnlineGamePage onlineGamePage = new OnlineGamePage(driver);
-        onlineGamePage.startRobotGameAsGuest();
+        // wait a bit for game UI to settle
+        Thread.sleep(3000);
 
-        WeaponPage weaponPage = new WeaponPage(driver);
+        WeaponPage wp = new WeaponPage(driver);
 
-        // Optional debug
-        // weaponPage.captureWeaponDiagnostics();
+        // Select a special weapon (throws if cannot)
+        wp.selectAndActivateWeapon();
 
-        weaponPage.selectRocketWeapon();
+        // Use it on an enemy cell (throws if cannot)
+        wp.useWeaponOnEnemyCell();
 
-        System.out.println(
-                "✅ TEST 7 PASSED: Special weapon selected successfully\n"
-        );
+        // Wait for effect detection (8s)
+        boolean effect = wp.waitForWeaponEffect(8);
 
-        Thread.sleep(2000);
-    }
+        // If effect is not detected: capture diagnostics to help debugging
+        if (!effect) {
+            // use the WeaponPage diagnostics method present in your code
+            wp.captureDiagnostics("weapon");
+        }
 
-
-    @Test
-    public void useWeaponTest() throws InterruptedException {
-
-        System.out.println("\n TEST 8: Use Special Weapon Automatically");
-
-        OnlineGamePage onlineGamePage = new OnlineGamePage(driver);
-        onlineGamePage.startRobotGameAsGuest();
-
-        WeaponPage weaponPage = new WeaponPage(driver);
-
-        // Optional debug
-        // weaponPage.captureWeaponDiagnostics();
-
-        // 1. Select special weapon
-        weaponPage.selectRocketWeapon();
-
-        // 2. Use weapon on enemy cell
-        weaponPage.useRocketOnEnemyCell();
-
-        // 3. Wait for effect
-        boolean effectDetected =
-                weaponPage.waitForWeaponEffect(8);
-
-        assertTrue(
-                effectDetected,
-                "Special weapon effect was not detected."
-        );
-
-        System.out.println(
-                "✅ TEST 8 PASSED: Special weapon used successfully\n"
-        );
-
-        Thread.sleep(10000);
+        Assertions.assertTrue(effect, "Expected to detect weapon effect but did not (see target/debug-screenshots).");
     }
 }
