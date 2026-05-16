@@ -76,147 +76,104 @@ public class WeaponPage {
 
     @SuppressWarnings("unchecked")
     public void selectAndActivateWeapon() throws InterruptedException {
-        final int tries = 8;
-        final int sleepMs = 500;
 
-        for (int attempt = 0; attempt < tries; attempt++) {
-            try {
-                StringBuilder sb = new StringBuilder();
+        Thread.sleep(1200);
 
-                sb.append("function doClick(el){");
-                sb.append(" if(!el) return false;");
-                sb.append(" try{ el.focus && el.focus(); }catch(e){}");
-                sb.append(" try{ el.scrollIntoView && el.scrollIntoView({block:'center'}); }catch(e){}");
-                sb.append(" try{ el.click && el.click(); return true; }catch(e){}");
-                sb.append(" try{ el.dispatchEvent && el.dispatchEvent(new MouseEvent('click',{bubbles:true})); return true; }catch(e){}");
-                sb.append(" return false;");
-                sb.append("}\n");
+        StringBuilder sb = new StringBuilder();
 
-                sb.append("const textNeedle='attack your opponent';\n");
-                sb.append("const nodes=Array.from(document.querySelectorAll('h1,h2,h3,div,span'))");
-                sb.append(".filter(n=>(n.textContent||'').toLowerCase().includes(textNeedle));\n");
+        sb.append("function clickReal(x,y){");
+        sb.append(" x=Math.max(1, Math.min(window.innerWidth-2, x));");
+        sb.append(" y=Math.max(1, Math.min(window.innerHeight-2, y));");
+        sb.append(" const el=document.elementFromPoint(x,y);");
+        sb.append(" if(!el) return {ok:false, reason:'no-element', x:x, y:y, vw:window.innerWidth, vh:window.innerHeight};");
+        sb.append(" const target=(el.closest && el.closest('button,[role=\"button\"],div,svg,canvas')) || el;");
+        sb.append(" try{target.style.outline='5px solid red'; target.style.boxShadow='0 0 20px red';}catch(e){}");
+        sb.append(" const opts={bubbles:true,cancelable:true,clientX:x,clientY:y};");
+        sb.append(" try{target.dispatchEvent(new MouseEvent('mousedown',opts));}catch(e){}");
+        sb.append(" try{target.dispatchEvent(new MouseEvent('mouseup',opts));}catch(e){}");
+        sb.append(" try{target.dispatchEvent(new MouseEvent('click',opts));}catch(e){}");
+        sb.append(" try{target.click();}catch(e){}");
+        sb.append(" return {ok:true,x:x,y:y,tag:target.tagName};");
+        sb.append("}");
 
-                sb.append("if(nodes.length){");
-                sb.append(" let h=nodes[0];");
-                sb.append(" let sib=h.nextElementSibling;");
-                sb.append(" let depth=0;");
-                sb.append(" while(sib && depth<10){");
-                sb.append("  try{");
-                sb.append("   const weapons=Array.from(sib.querySelectorAll('button, img, [role=\"button\"], div'))");
-                sb.append("   .filter(e=>{");
-                sb.append("     try{");
-                sb.append("       const r=e.getBoundingClientRect();");
-                sb.append("       const txt=(e.textContent||'').toLowerCase();");
-                sb.append("       return r && r.width>25 && r.height>25");
-                sb.append("       && !txt.includes('abort') && !txt.includes('resign')");
-                sb.append("       && !txt.includes('quit') && !txt.includes('leave')");
-                sb.append("       && !txt.includes('exit');");
-                sb.append("     }catch(e){return false;}");
-                sb.append("   });");
+        sb.append("function findEnemyBoard(){");
+        sb.append(" const all=Array.from(document.querySelectorAll('div,canvas,svg'));");
+        sb.append(" const boards=all.map(e=>({e:e,r:e.getBoundingClientRect()}))");
+        sb.append(" .filter(o=>");
+        sb.append("   o.r.width>=250 && o.r.width<=650 &&");
+        sb.append("   o.r.height>=250 && o.r.height<=650 &&");
+        sb.append("   o.r.left>window.innerWidth*0.35 &&");
+        sb.append("   o.r.right<window.innerWidth-20 &&");
+        sb.append("   o.r.top>100 &&");
+        sb.append("   o.r.bottom<window.innerHeight-80");
+        sb.append(" )");
+        sb.append(" .sort((a,b)=>a.r.left-b.r.left);");
+        sb.append(" return boards.length ? boards[0].r : null;");
+        sb.append("}");
 
-                sb.append("   if(weapons.length){");
-                sb.append("     const index=Math.floor(Math.random()*weapons.length);");
-                sb.append("     const weapon=weapons[index];");
-                sb.append("     weapon.style.outline='5px solid red';");
-                sb.append("     weapon.style.boxShadow='0 0 15px red';");
-                sb.append("     const txt=(weapon.textContent||weapon.alt||weapon.title||'weapon-'+index).trim();");
-                sb.append("     if(doClick(weapon)){");
-                sb.append("       return {ok:true, method:'random-header-sibling', selectedIndex:index, total:weapons.length, weaponText:txt};");
-                sb.append("     }");
-                sb.append("   }");
-                sb.append("  }catch(e){}");
-                sb.append("  sib=sib.nextElementSibling;");
-                sb.append("  depth++;");
-                sb.append(" }");
-                sb.append("}\n");
+        sb.append("const r=findEnemyBoard();");
+        sb.append("if(!r) return {ok:false, reason:'enemy-board-not-found', vw:window.innerWidth, vh:window.innerHeight};");
 
-                sb.append("return {ok:false, reason:'random-weapon-not-found'};");
+        // grey missile icon = second weapon under enemy board
+        sb.append("const x=Math.round(r.left + r.width * 0.31);");
+        sb.append("const y=Math.round(r.bottom + 38);");
 
-                Object out = js.executeScript(sb.toString());
+        sb.append("return clickReal(x,y);");
 
-                if (out instanceof Map && Boolean.TRUE.equals(((Map<String, Object>) out).get("ok"))) {
-                    System.out.println("✅ Random weapon selected: " + out);
-                    Thread.sleep(700);
-                    return;
-                } else {
-                    System.out.println("selectAndActivateWeapon random attempt result=" + out);
-                }
+        Object out = js.executeScript(sb.toString());
 
-            } catch (Exception e) {
-                System.err.println("selectAndActivateWeapon random attempt error: " + e.getMessage());
-            }
-
-            Thread.sleep(sleepMs);
+        if (out instanceof Map &&
+                Boolean.TRUE.equals(((Map<String, Object>) out).get("ok"))) {
+            System.out.println("🚀 Grey missile selected: " + out);
+            Thread.sleep(1200);
+            return;
         }
 
-        captureDiagnostics("random-weapon-select-fail");
-        throw new IllegalStateException("Failed to select random weapon.");
+        captureDiagnostics("grey-missile-select-fail");
+        throw new IllegalStateException("Failed to select grey missile: " + out);
     }
     @SuppressWarnings("unchecked")
     public void useWeaponOnEnemyCell() throws InterruptedException {
-        final int tries = 10;
-        final int sleepMs = 600;
 
-        for (int i = 0; i < tries; i++) {
-            try {
-                StringBuilder sb = new StringBuilder();
+        Thread.sleep(1000);
 
-                sb.append("function doClick(el){");
-                sb.append(" if(!el) return false;");
-                sb.append(" try{ el.focus && el.focus(); }catch(e){}");
-                sb.append(" try{ el.click && el.click(); return true;}catch(e){}");
-                sb.append(" try{ el.dispatchEvent && el.dispatchEvent(new MouseEvent('click',{bubbles:true})); return true;}catch(e){}");
-                sb.append(" return false;");
-                sb.append("}\n");
+        StringBuilder sb = new StringBuilder();
 
-                sb.append("const selectors=['.opponent .cell','.enemy .cell','.opponent-cell','.enemy-cell','.opponent td','.enemy td','[role=\"grid\"] [role=\"gridcell\"]'];\n");
-                sb.append("let cells=[];\n");
-                sb.append("for(const s of selectors){");
-                sb.append(" try{");
-                sb.append("   cells=Array.from(document.querySelectorAll(s)).filter(e=>{");
-                sb.append("     const r=e.getBoundingClientRect();");
-                sb.append("     const cls=(e.className||'').toLowerCase();");
-                sb.append("     const txt=(e.textContent||'').toLowerCase();");
-                sb.append("     return r && r.width>3 && r.height>3 && !cls.includes('hit') && !cls.includes('miss') && !txt.includes('x');");
-                sb.append("   });");
-                sb.append("   if(cells.length) break;");
-                sb.append(" }catch(e){}");
-                sb.append("}\n");
+        sb.append("function realClick(x,y){");
+        sb.append(" const el=document.elementFromPoint(x,y);");
+        sb.append(" if(!el) return {ok:false, reason:'no-element', x:x, y:y};");
+        sb.append(" const target=(el.closest && el.closest('div,td,button,canvas')) || el;");
+        sb.append(" try{target.style.outline='5px solid blue';}catch(e){}");
+        sb.append(" const opts={bubbles:true,cancelable:true,clientX:x,clientY:y};");
+        sb.append(" try{target.dispatchEvent(new MouseEvent('mousedown',opts));}catch(e){}");
+        sb.append(" try{target.dispatchEvent(new MouseEvent('mouseup',opts));}catch(e){}");
+        sb.append(" try{target.dispatchEvent(new MouseEvent('click',opts));}catch(e){}");
+        sb.append(" try{target.click();}catch(e){}");
+        sb.append(" return {ok:true, x:x, y:y};");
+        sb.append("}");
 
-                sb.append("if(cells.length){");
-                sb.append(" const index=Math.floor(Math.random()*cells.length);");
-                sb.append(" const target=cells[index];");
-                sb.append(" target.style.outline='5px solid blue';");
-                sb.append(" target.style.boxShadow='0 0 18px blue';");
-                sb.append(" target.style.borderRadius='50%';");
-                sb.append(" if(doClick(target)){");
-                sb.append("   return {ok:true, method:'random-opponent-cell', selectedCell:index, totalCells:cells.length};");
-                sb.append(" }");
-                sb.append("}\n");
+        sb.append("const vw=window.innerWidth;");
+        sb.append("const vh=window.innerHeight;");
 
-                sb.append("return {ok:false, reason:'no-random-opponent-cell-found'};");
+        // SAFE CENTER AREA OF ENEMY BOARD
+        sb.append("const x=Math.round(vw*0.685);");
+        sb.append("const y=Math.round(vh*0.490);");
 
-                Object out = js.executeScript(sb.toString());
+        sb.append("return realClick(x,y);");
 
-                if (out instanceof Map && Boolean.TRUE.equals(((Map<String, Object>) out).get("ok"))) {
-                    System.out.println("✅ Random opponent target selected and clicked: " + out);
-                    Thread.sleep(800);
-                    return;
-                } else {
-                    System.out.println("useWeaponOnEnemyCell random attempt: " + out);
-                }
+        Object out = js.executeScript(sb.toString());
 
-            } catch (Exception e) {
-                System.err.println("useWeaponOnEnemyCell random attempt error: " + e.getMessage());
-            }
+        if (out instanceof Map &&
+                Boolean.TRUE.equals(((Map<String, Object>) out).get("ok"))) {
 
-            Thread.sleep(sleepMs);
+            System.out.println("✅ Missile launched on enemy board: " + out);
+                    Thread.sleep(1000);
+            return;
         }
 
-        captureDiagnostics("random-weapon-use-fail");
-        throw new IllegalStateException("Failed to use weapon on random opponent cell.");
+        captureDiagnostics("enemy-board-click-fail");
+        throw new IllegalStateException("Failed to use missile on enemy board.");
     }
-
     @SuppressWarnings("unchecked")
     public boolean waitForWeaponEffect(int timeoutSeconds) throws InterruptedException {
         long end = System.currentTimeMillis() + timeoutSeconds * 1000L;
