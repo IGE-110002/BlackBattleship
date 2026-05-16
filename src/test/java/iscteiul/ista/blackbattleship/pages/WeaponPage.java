@@ -401,5 +401,59 @@ public class WeaponPage {
         System.out.println("⚠️ waitForChatMessage: timeout");
         return false;
     }
+    public void sendRandomTaunt() throws InterruptedException {
+        String[] taunts = {
+                "Boom 💥",
+                "Direct hit 🚀",
+                "Weapon attack successful ✅",
+                "Nice shot 😄",
+                "Target locked 🎯"
+        };
 
+        int index = new java.util.Random().nextInt(taunts.length);
+        String msg = taunts[index];
+
+        System.out.println("💬 Random taunt selected: " + msg);
+        sendChatMessage(msg);
+    }
+    @SuppressWarnings("unchecked")
+    public int countSuccessfulHits() {
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("const hitWords = ['hit','sank','destroyed','boom','explosion','blast'];");
+        sb.append("const body = (document.body && document.body.innerText || '').toLowerCase();");
+        sb.append("let count = 0;");
+        sb.append("for(const word of hitWords){");
+        sb.append(" if(body.includes(word)) count++;");
+        sb.append("}");
+        sb.append("return count;");
+
+        Object result = js.executeScript(sb.toString());
+
+        int hits = 0;
+        if (result instanceof Number) {
+            hits = ((Number) result).intValue();
+        }
+
+        System.out.println("📊 Successful hit indicators found: " + hits);
+        return hits;
+    }
+    public void useWeaponAndSendRandomTaunt() throws InterruptedException {
+        selectAndActivateWeapon();
+
+        useWeaponOnEnemyCell();
+
+        boolean effect = waitForWeaponEffect(10);
+        if (!effect) {
+            captureDiagnostics("extra-no-weapon-effect");
+            throw new IllegalStateException("Weapon effect was not detected.");
+        }
+
+        int hits = countSuccessfulHits();
+        System.out.println("🎯 Hit count after weapon attack: " + hits);
+
+        sendRandomTaunt();
+
+        System.out.println("✅ Extra flow completed: weapon used + hit counted + random taunt sent.");
+    }
 }
