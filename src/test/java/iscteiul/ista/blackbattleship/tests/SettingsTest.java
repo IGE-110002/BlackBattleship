@@ -18,6 +18,8 @@ public class SettingsTest extends BaseTest {
 
         settingsPage.clickDarkMode();
 
+        settingsPage.clickSound();
+
         Thread.sleep(2000);
     }
 }

@@ -38,4 +38,21 @@ public class SettingsPage {
 
         driver.findElement(darkModeButton).click();
     }
+
+    public void clickSound()
+            throws InterruptedException {
+
+        Thread.sleep(2000);
+
+        WebElement sound =
+                driver.findElement(
+                        By.xpath("//*[contains(text(),'Sound')]"));
+
+        ((JavascriptExecutor) driver)
+                .executeScript("arguments[0].click();", sound);
+
+        System.out.println("Sound clicked");
+
+        Thread.sleep(2000);
+    }
 }
