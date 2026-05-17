@@ -16,15 +16,18 @@ public class CreateTournamentSelenideTest extends SelenideBaseTest {
     public void userStory13CreateTournamentSelenideTest() {
 
         open(BASE_URL);
+        demoPause();
 
         CreateTournamentSelenidePage createTournamentPage =
                 new CreateTournamentSelenidePage();
 
         createTournamentPage.clickCreateTournament();
+        demoPause();
 
         Assertions.assertTrue(
                 createTournamentPage.tournamentCreationPageIsDisplayed()
         );
+        demoPause();
 
         Assertions.assertTrue(
                 createTournamentPage.tournamentDescriptionIsDisplayed()
