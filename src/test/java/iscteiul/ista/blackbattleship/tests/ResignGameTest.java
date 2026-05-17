@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 
 /**
  * Test class for resigning a game.
- * Tests the resign functionality by confirming the resign dialog.
+ * TestSuiteSelenide_108419.Tests the resign functionality by confirming the resign dialog.
  */
 public class ResignGameTest extends BaseTest {
 
