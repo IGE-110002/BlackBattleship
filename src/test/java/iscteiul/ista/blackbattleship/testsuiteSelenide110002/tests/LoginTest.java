@@ -1,11 +1,12 @@
 package iscteiul.ista.blackbattleship.testsuiteSelenide110002.tests;
 
 import iscteiul.ista.blackbattleship.testsuiteSelenide110002.pages.LoginPage;
+import iscteiul.ista.blackbattleship.testsuiteSelenide110002.utils.BaseTest;
 import org.junit.jupiter.api.Test;
 
 import static com.codeborne.selenide.Selenide.open;
 
-public class LoginTest {
+public class LoginTest extends BaseTest {
 
     @Test
     public void loginTest() {
