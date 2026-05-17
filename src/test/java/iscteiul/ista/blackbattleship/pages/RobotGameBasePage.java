@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 /**
  * Shared support for guest Battleship flows played against the robot.
  */
-abstract class RobotGameBasePage {
+public abstract class RobotGameBasePage {
 
     protected final WebDriver driver;
     protected final WebDriverWait wait;
@@ -217,7 +217,9 @@ abstract class RobotGameBasePage {
                 .findFirst()
                 .orElse(null));
 
-        clickWithJavaScript(element);
+        if (element != null) {
+            clickWithJavaScript(element);
+        }
     }
 
     private void clickWithJavaScript(WebElement element) {
