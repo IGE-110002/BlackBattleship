@@ -1,0 +1,1 @@
+{"total":2,"items":[{"uid":"61100fd5a6555fa0800c30244104e08a","name":"TestSuite_121008_selenide.tests.WeaponTest","statistic":{"failed":0,"broken":0,"skipped":0,"passed":3,"unknown":0,"total":3}},{"uid":"deecf00cb9abad2142fc5b0975f9692e","name":"TestSuite_121008_selenide.tests.EmojiTest","statistic":{"failed":0,"broken":0,"skipped":0,"passed":2,"unknown":0,"total":2}}]}
