@@ -1,0 +1,5 @@
+"DESCRIPTION","DURATION IN MS","NAME","PARENT SUITE","START TIME","STATUS","STOP TIME","SUB SUITE","SUITE","TEST CLASS","TEST METHOD"
+"","51348","onlineGameTest()","","2026-05-17","passed","2026-05-17","","testsuiteSelenide_110002.tests.OnlineGameTest","testsuiteSelenide_110002.tests.OnlineGameTest","onlineGameTest"
+"","29552","settingsTest()","","2026-05-17","passed","2026-05-17","","testsuiteSelenide_110002.tests.SettingsTest","testsuiteSelenide_110002.tests.SettingsTest","settingsTest"
+"","15904","rulesTest()","","2026-05-17","passed","2026-05-17","","testsuiteSelenide_110002.tests.RulesTest","testsuiteSelenide_110002.tests.RulesTest","rulesTest"
+"","35757","loginTest()","","2026-05-17","passed","2026-05-17","","testsuiteSelenide_110002.tests.LoginTest","testsuiteSelenide_110002.tests.LoginTest","loginTest"

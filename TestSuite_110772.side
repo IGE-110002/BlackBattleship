@@ -1,0 +1,170 @@
+{
+  "id": "c72ed853-c3bb-4cca-a60b-4bfcfdfbe8ff",
+  "version": "2.0",
+  "name": "TestSuite_110772",
+  "url": "https://papergames.io/en/battleship",
+  "tests": [{
+    "id": "865120c4-1da6-4632-bed8-ac915e895a51",
+    "name": "UserStoryTest13",
+    "commands": [{
+      "id": "acdfc15a-ad02-4e73-a6cc-eac5800b4ea2",
+      "comment": "Abre a página inicial do Battleship",
+      "command": "open",
+      "target": "https://papergames.io/en/battleship",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "2bc8490f-0054-474d-931d-18f79330a98a",
+      "comment": "Define o tamanho da janela do browser",
+      "command": "setWindowSize",
+      "target": "1552x840",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "fbb4e2e0-bd24-4d22-bd0c-725d8d7bf79c",
+      "comment": "Clica na opção Create Tournament",
+      "command": "click",
+      "target": "css=.position-relative > .front",
+      "targets": [
+        ["css=.position-relative > .front", "css:finder"],
+        ["xpath=//a/span[2]", "xpath:position"]
+      ],
+      "value": ""
+    }]
+  }, {
+    "id": "631079bc-edfc-4628-b3ac-5a1c5710330d",
+    "name": "UserStoryTest14",
+    "commands": [{
+      "id": "3d535f15-3a8d-4595-92d5-ae5b7971b1a5",
+      "comment": "Abre a página inicial do Battleship",
+      "command": "open",
+      "target": "https://papergames.io/en/battleship",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "198bba04-3f2f-4f95-b5e3-d42cecb76c56",
+      "comment": "Define o tamanho da janela do browser",
+      "command": "setWindowSize",
+      "target": "1552x840",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "28155bd2-a9e5-4ea1-9656-7df8cdf2963e",
+      "comment": "Clica na opção Play with a friend",
+      "command": "click",
+      "target": "css=.w-100:nth-child(1) .front",
+      "targets": [
+        ["css=.w-100:nth-child(1) .front", "css:finder"],
+        ["xpath=//app-juicy-button/button/span[2]", "xpath:position"],
+        ["xpath=//span[contains(.,'Play with a friend')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "011a9796-42ba-4703-9d26-362b3d227eb2",
+      "comment": "Insere nickname de utilizador convidado",
+      "command": "type",
+      "target": "css=.input-xl",
+      "targets": [
+        ["css=.input-xl", "css:finder"],
+        ["xpath=//input[@type='text']", "xpath:attributes"],
+        ["xpath=//mat-dialog-container[@id='mat-mdc-dialog-serverApp0']/div/div/app-guest-registration-dialog/form/app-dialog-layout/div/section/div/div/div/input", "xpath:idRelative"],
+        ["xpath=//input", "xpath:position"]
+      ],
+      "value": "Guest110772"
+    }, {
+      "id": "72485be9-7895-4df7-aa14-421203b8d827",
+      "comment": "Clica em Continue para avançar",
+      "command": "click",
+      "target": "css=.p-3 > .btn",
+      "targets": [
+        ["css=.p-3 > .btn", "css:finder"],
+        ["xpath=//button[@type='submit']", "xpath:attributes"],
+        ["xpath=//mat-dialog-container[@id='mat-mdc-dialog-serverApp0']/div/div/app-guest-registration-dialog/form/app-dialog-layout/div/footer/button", "xpath:idRelative"],
+        ["xpath=//footer/button", "xpath:position"],
+        ["xpath=//button[contains(.,'Continue')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }]
+  }, {
+    "id": "739636fd-a926-4b35-b9da-26d29e62aae2",
+    "name": "UserStoryTest15",
+    "commands": [{
+      "id": "3278188c-6996-45ae-9118-d8daa5a1b580",
+      "comment": "Abre a página inicial do Battleship",
+      "command": "open",
+      "target": "https://papergames.io/en/battleship",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "df17ca7b-a666-4af7-a5e0-4f5f7ec02c9e",
+      "comment": "Define o tamanho da janela do browser",
+      "command": "setWindowSize",
+      "target": "1552x840",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "de842fd4-9fcc-4492-b1c4-b58e92eef7c5",
+      "comment": "Faz scroll até à secção Daily leaderboard",
+      "command": "runScript",
+      "target": "window.scrollTo(0,0)",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "f60eba0e-5bd6-4f25-a96b-d844560bc06e",
+      "comment": "Clica no botão See all para abrir o ranking completo",
+      "command": "click",
+      "target": "linkText=See all",
+      "targets": [
+        ["linkText=See all", "linkText"],
+        ["css=.text-end > .btn", "css:finder"],
+        ["xpath=//a[contains(text(),'See all')]", "xpath:link"],
+        ["xpath=//a[contains(@href, '/en/t/zPiTEEyUl')]", "xpath:href"],
+        ["xpath=//div[2]/a", "xpath:position"],
+        ["xpath=//a[contains(.,'See all')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }]
+  }, {
+    "id": "459f9b34-aacb-438d-b3ea-731e1d8cf6f6",
+    "name": "UserStoryTest16",
+    "commands": [{
+      "id": "9bd4ef7b-4924-4564-bf6b-f07fc56fd96b",
+      "comment": "Abre a página inicial do Battleship",
+      "command": "open",
+      "target": "https://papergames.io/en/battleship",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "c1423f50-3b3d-4a0a-afac-1e1eebdad5ae",
+      "comment": "Define o tamanho da janela do browser",
+      "command": "setWindowSize",
+      "target": "1552x840",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "b590d2c7-966e-49b7-891c-639c8a2b2c1d",
+      "comment": "Clica na opção Create tournament",
+      "command": "clickAt",
+      "target": "css=.position-relative > .front",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "9c5c151e-3987-4bc9-98a4-9d61218d213c",
+      "comment": "Volta à página inicial do Battleship",
+      "command": "go back",
+      "target": "",
+      "targets": [],
+      "value": ""
+    }]
+  }],
+  "suites": [{
+    "id": "9d9b75f8-9a38-40e4-8727-882851cc3107",
+    "name": "Default Suite",
+    "persistSession": false,
+    "parallel": false,
+    "timeout": 300,
+    "tests": []
+  }],
+  "urls": [],
+  "plugins": []
+}
