@@ -1,0 +1,5 @@
+"DESCRIPTION","DURATION IN MS","NAME","PARENT SUITE","START TIME","STATUS","STOP TIME","SUB SUITE","SUITE","TEST CLASS","TEST METHOD"
+"","7526","userStoryTest4()","","2026-05-17","broken","2026-05-17","","TestSuiteSelenide_108419.tests.CancelResignTest","TestSuiteSelenide_108419.tests.CancelResignTest","userStoryTest4"
+"","9015","userStoryTest2()","","2026-05-17","broken","2026-05-17","","TestSuiteSelenide_108419.tests.AttackEnemyCellTest","TestSuiteSelenide_108419.tests.AttackEnemyCellTest","userStoryTest2"
+"","7516","userStoryTest3()","","2026-05-17","broken","2026-05-17","","TestSuiteSelenide_108419.tests.ResignGameTest","TestSuiteSelenide_108419.tests.ResignGameTest","userStoryTest3"
+"","7482","userStoryTest1()","","2026-05-17","broken","2026-05-17","","TestSuiteSelenide_108419.tests.StartGameVsRobotTest","TestSuiteSelenide_108419.tests.StartGameVsRobotTest","userStoryTest1"
