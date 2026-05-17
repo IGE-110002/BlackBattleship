@@ -20,6 +20,8 @@ public class SettingsTest extends BaseTest {
 
         settingsPage.clickSound();
 
+        settingsPage.closeSettings();
+
         Thread.sleep(2000);
     }
 }
