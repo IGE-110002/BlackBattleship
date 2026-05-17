@@ -16,6 +16,7 @@ public class LeaderboardSelenideTest extends SelenideBaseTest {
     public void userStory15OpenDailyLeaderboardSelenideTest() {
 
         open(BASE_URL);
+        demoPause();
 
         LeaderboardSelenidePage leaderboardPage =
                 new LeaderboardSelenidePage();
@@ -23,15 +24,19 @@ public class LeaderboardSelenideTest extends SelenideBaseTest {
         Assertions.assertTrue(
                 leaderboardPage.dailyLeaderboardIsDisplayed()
         );
+        demoPause();
 
         leaderboardPage.clickSeeAllRankings();
+        demoPause();
 
         Assertions.assertTrue(
                 leaderboardPage.rankingWindowIsDisplayed()
         );
+        demoPause();
 
         Assertions.assertTrue(
                 leaderboardPage.rankaIsDisplayed()
         );
+        demoPause();
     }
 }

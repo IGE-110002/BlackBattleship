@@ -16,24 +16,30 @@ public class GuestHomeNavigationSelenideTest extends SelenideBaseTest {
     public void userStory16ReturnToHomeAndViewGameModesSelenideTest() {
 
         open(BASE_URL);
+        demoPause();
 
         MainPageSelenidePage mainPage =
                 new MainPageSelenidePage();
 
         mainPage.openCreateTournamentPage();
+        demoPause();
 
         mainPage.goBackToMainPage();
+        demoPause();
 
         Assertions.assertTrue(
                 mainPage.playWithFriendOptionIsDisplayed()
         );
+        demoPause();
 
         Assertions.assertTrue(
                 mainPage.playVsRobotOptionIsDisplayed()
         );
+        demoPause();
 
         Assertions.assertTrue(
                 mainPage.createTournamentOptionIsDisplayed()
         );
+        demoPause();
     }
 }

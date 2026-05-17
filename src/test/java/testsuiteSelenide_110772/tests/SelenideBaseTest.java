@@ -11,6 +11,10 @@ public class SelenideBaseTest {
 
     protected static final String BASE_URL = "https://papergames.io/en/battleship";
 
+    protected void demoPause() {
+        Selenide.sleep(1500);
+    }
+
     @BeforeEach
     public void setUp() {
         Configuration.browser = "chrome";
@@ -27,6 +31,7 @@ public class SelenideBaseTest {
 
     @AfterEach
     public void tearDown() {
+        Selenide.sleep(1000);
         Selenide.closeWebDriver();
     }
 }

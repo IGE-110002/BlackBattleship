@@ -16,18 +16,23 @@ public class FriendGameSelenideTest extends SelenideBaseTest {
     public void userStory14CreateFriendGameSelenideTest() {
 
         open(BASE_URL);
+        demoPause();
 
         FriendGameSelenidePage friendGamePage =
                 new FriendGameSelenidePage();
 
         friendGamePage.clickPlayWithFriend();
+        demoPause();
 
         Assertions.assertTrue(
                 friendGamePage.nicknameFieldIsDisplayed()
         );
+        demoPause();
 
         friendGamePage.enterNickname("Guest110772");
+        demoPause();
 
         friendGamePage.confirmNickname();
+        demoPause();
     }
 }
