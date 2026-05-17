@@ -1,7 +1,7 @@
-package iscteiul.ista.blackbattleship.testsuiteSelenide110002.tests;
+package testsuiteSelenide_110002.tests;
 
-import iscteiul.ista.blackbattleship.testsuiteSelenide110002.pages.OnlineGamePage;
-import iscteiul.ista.blackbattleship.testsuiteSelenide110002.utils.BaseTest;
+import testsuiteSelenide_110002.pages.OnlineGamePage;
+import testsuiteSelenide_110002.utils.BaseTest;
 import org.junit.jupiter.api.Test;
 import static com.codeborne.selenide.Selenide.sleep;
 

@@ -1,4 +1,4 @@
-package iscteiul.ista.blackbattleship.testsuiteSelenide110002.pages;
+package testsuiteSelenide_110002.pages;
 
 import com.codeborne.selenide.SelenideElement;
 

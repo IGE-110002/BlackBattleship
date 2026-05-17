@@ -1,4 +1,4 @@
-package iscteiul.ista.blackbattleship.testsuiteSelenide110002.utils;
+package testsuiteSelenide_110002.utils;
 
 import org.junit.jupiter.api.AfterEach;
 
