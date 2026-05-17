@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 
 /**
  * Test class for attacking an enemy cell.
- * Tests the attack functionality during gameplay.
+ * TestSuiteSelenide_108419.Tests the attack functionality during gameplay.
  */
 public class AttackEnemyCellTest extends BaseTest {
 

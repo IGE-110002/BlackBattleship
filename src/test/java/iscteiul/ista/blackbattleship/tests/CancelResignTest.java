@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 
 /**
  * Test class for canceling a resignation.
- * Tests the cancel functionality of the resign dialog.
+ * TestSuiteSelenide_108419.Tests the cancel functionality of the resign dialog.
  */
 public class CancelResignTest extends BaseTest {
 
