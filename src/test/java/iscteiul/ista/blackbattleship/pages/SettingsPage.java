@@ -15,6 +15,9 @@ public class SettingsPage {
     By darkModeButton =
             By.xpath("//*[contains(text(),'Dark mode')]");
 
+    By closeSettingsButton =
+            By.cssSelector(".dialog-close .mat-mdc-button-touch-target");
+
     public SettingsPage(WebDriver driver) {
         this.driver = driver;
     }
@@ -54,5 +57,17 @@ public class SettingsPage {
         System.out.println("Sound clicked");
 
         Thread.sleep(2000);
+    }
+
+    public void closeSettings()
+            throws InterruptedException {
+
+        Thread.sleep(2000);
+
+        WebElement closeButton =
+                driver.findElement(closeSettingsButton);
+
+        ((JavascriptExecutor) driver)
+                .executeScript("arguments[0].click();", closeButton);
     }
 }

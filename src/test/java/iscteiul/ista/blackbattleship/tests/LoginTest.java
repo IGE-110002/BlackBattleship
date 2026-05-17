@@ -8,27 +8,21 @@ import iscteiul.ista.blackbattleship.utils.BaseTest;
 public class LoginTest extends BaseTest {
 
     @Test
-    public void loginTest() throws InterruptedException {
+    public void loginTest()
+            throws InterruptedException {
 
-        LoginPage loginPage = new LoginPage(driver);
+        LoginPage loginPage =
+                new LoginPage(driver);
 
         loginPage.openLoginPopup();
 
-        loginPage.enterEmail("project.ssi.worten@gmail.com");
+        loginPage.enterEmail(
+                "project.ssi.worten@gmail.com");
 
-        loginPage.enterPassword("ESPROJECT");
+        loginPage.enterPassword(
+                "ESPROJECT");
 
         loginPage.clickPopupLogin();
-
-        Thread.sleep(3000);
-
-        loginPage.enterNickname("ES-Project");
-
-        loginPage.clickContinue();
-
-        Thread.sleep(5000);
-
-        loginPage.closePopup();
 
         Thread.sleep(5000);
     }

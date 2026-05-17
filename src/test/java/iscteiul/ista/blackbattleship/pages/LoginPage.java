@@ -2,36 +2,56 @@ package iscteiul.ista.blackbattleship.pages;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+
+import java.time.Duration;
 
 public class LoginPage {
 
     WebDriver driver;
 
-    By loginButtonMenu = By.xpath("//button[normalize-space()='Login']");
+    WebDriverWait wait;
 
-    By emailField = By.xpath("//input[@type='email']");
+    By loginButtonMenu =
+            By.xpath("//button[normalize-space()='Login']");
 
-    By passwordField = By.xpath("//input[@type='password']");
+    By emailField =
+            By.id("mat-input-serverApp0");
 
-    By popupLoginButton = By.cssSelector("button.btn.btn-lg.btn-secondary");
+    By passwordField =
+            By.id("mat-input-serverApp1");
 
-    By nicknameField = By.xpath("//input[@placeholder='Nickname']");
+    By popupLoginButton =
+            By.cssSelector(
+                    ".w-100:nth-child(1) > .btn-secondary > .front");
 
-    By continueButton = By.xpath("//button[contains(text(),'Continue')]");
-
-    By closePopupButton = By.cssSelector("div.dialog-close");
+    By cookieConsentButton =
+            By.xpath(
+                    "//button[@aria-label='Consent' or normalize-space(.)='Consent']");
 
     public LoginPage(WebDriver driver) {
+
         this.driver = driver;
+
+        this.wait =
+                new WebDriverWait(driver, Duration.ofSeconds(10));
     }
 
-    public void openLoginPopup() throws InterruptedException {
+    public void openLoginPopup()
+            throws InterruptedException {
 
-        Thread.sleep(5000);
+        dismissCookiePopupIfPresent();
 
-        WebElement button = driver.findElement(loginButtonMenu);
+        Thread.sleep(3000);
+
+        WebElement button =
+                driver.findElement(loginButtonMenu);
 
         ((JavascriptExecutor) driver)
                 .executeScript("arguments[0].click();", button);
@@ -41,53 +61,57 @@ public class LoginPage {
 
     public void enterEmail(String email) {
 
-        driver.findElement(emailField).sendKeys(email);
+        driver.findElement(emailField)
+                .sendKeys(email);
     }
 
-    public void enterPassword(String password) throws InterruptedException {
+    public void enterPassword(String password)
+            throws InterruptedException {
 
-        driver.findElement(passwordField).sendKeys(password);
+        driver.findElement(passwordField)
+                .sendKeys(password);
 
         Thread.sleep(2000);
     }
 
-    public void clickPopupLogin() throws InterruptedException {
+    public void clickPopupLogin()
+            throws InterruptedException {
 
-        Thread.sleep(4000);
+        Thread.sleep(3000);
 
-        WebElement loginBtn = driver.findElement(popupLoginButton);
+        WebElement loginBtn =
+                driver.findElement(popupLoginButton);
 
         ((JavascriptExecutor) driver)
-                .executeScript("arguments[0].scrollIntoView(true);", loginBtn);
+                .executeScript(
+                        "arguments[0].scrollIntoView(true);",
+                        loginBtn);
 
         Thread.sleep(1000);
 
         ((JavascriptExecutor) driver)
                 .executeScript("arguments[0].click();", loginBtn);
-
-        System.out.println("Popup login clicked");
     }
 
-    public void enterNickname(String nickname) throws InterruptedException {
+    private void dismissCookiePopupIfPresent() {
 
-        Thread.sleep(3000);
+        try {
 
-        driver.findElement(nicknameField).sendKeys(nickname);
-    }
+            WebElement button =
+                    new WebDriverWait(driver, Duration.ofSeconds(3))
+                            .until(ExpectedConditions
+                                    .presenceOfElementLocated(
+                                            cookieConsentButton));
 
-    public void clickContinue() throws InterruptedException {
+            if (button.isDisplayed()) {
 
-        Thread.sleep(2000);
+                ((JavascriptExecutor) driver)
+                        .executeScript(
+                                "arguments[0].click();",
+                                button);
+            }
 
-        driver.findElement(continueButton).click();
-
-        System.out.println("Continue clicked");
-    }
-
-    public void closePopup() throws InterruptedException {
-
-        Thread.sleep(3000);
-
-        driver.findElement(closePopupButton).click();
+        } catch (TimeoutException | NoSuchElementException ignored) {
+        }
     }
 }
