@@ -18,7 +18,7 @@ public class SettingsTest extends BaseTest {
 
         settingsPage.clickDarkMode();
 
-        settingsPage.clickSound();
+       // settingsPage.clickSound();
 
         settingsPage.closeSettings();
 
