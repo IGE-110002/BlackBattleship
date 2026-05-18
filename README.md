@@ -53,3 +53,6 @@ Grupo TP05-5
 15. Como utilizador convidado (Guest), quero consultar as instruções/regras do Battleship para compreender como jogar antes de iniciar uma partida.
     
 16. Como utilizador convidado (Guest), quero voltar à página inicial para consultar os modos de jogo disponíveis.
+
+Video dos testes do Selenide em funcionamento:
+https://youtu.be/AJnib0P1gts
